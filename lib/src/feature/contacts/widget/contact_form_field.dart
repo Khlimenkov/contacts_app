@@ -6,7 +6,7 @@ class ContactFormField extends StatelessWidget {
   const ContactFormField({
     super.key,
     required this.textController,
-    required this.isReadOnly,
+    this.isReadOnly = false,
     required this.labelText,
     this.validator,
     this.keyboardType = TextInputType.text,

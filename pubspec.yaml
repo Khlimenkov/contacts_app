@@ -45,5 +45,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  shaders:
+    - assets/shaders/shimmer.frag
   assets:
     - assets/contacts.json

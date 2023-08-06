@@ -1,80 +1,78 @@
 part of 'contact_bloc.dart';
 
-typedef ContactEntity = List<Contact>;
-
 /// ContactState.
 sealed class ContactState extends _ContactStateBase {
   const factory ContactState.idle({
-    required ContactEntity data,
+    required Contact contact,
     String message,
   }) = ContactStateIdle;
 
   const factory ContactState.processing({
-    required ContactEntity data,
+    required Contact contact,
     String message,
   }) = ContactStateProcessing;
 
   const factory ContactState.successfulFetch({
-    required ContactEntity data,
+    required Contact contact,
     String message,
   }) = ContactStateSuccessfulFetch;
 
   const factory ContactState.successfulCreate({
-    required ContactEntity data,
+    required Contact contact,
     String message,
   }) = ContactStateSuccessfulCreate;
 
   const factory ContactState.successfulUpdate({
-    required ContactEntity data,
+    required Contact contact,
     String message,
   }) = ContactStateSuccessfulUpdate;
 
   const factory ContactState.successfulDelete({
-    required ContactEntity data,
+    required Contact contact,
     String message,
   }) = ContactStateSuccessfulDelete;
 
   const factory ContactState.error({
-    required ContactEntity data,
+    required Contact contact,
     String message,
   }) = ContactStateError;
 
-  const ContactState({required super.data, required super.message});
+  const ContactState({required super.contact, required super.message});
 }
 
 /// Idling state
 final class ContactStateIdle extends ContactState with _ContactState {
-  const ContactStateIdle({required super.data, super.message = 'Idling'});
+  const ContactStateIdle({required super.contact, super.message = 'Idling'});
 }
 
 /// Processing
 final class ContactStateProcessing extends ContactState with _ContactState {
-  const ContactStateProcessing({required super.data, super.message = 'Processing'});
+  const ContactStateProcessing({required super.contact, super.message = 'Processing'});
 }
 
 /// Successful
 final class ContactStateSuccessfulFetch extends ContactState with _ContactState {
-  const ContactStateSuccessfulFetch({required super.data, super.message = 'Successful'});
+  const ContactStateSuccessfulFetch({required super.contact, super.message = 'Successful'});
 }
 
 /// Successful create
 final class ContactStateSuccessfulCreate extends ContactState with _ContactState {
-  const ContactStateSuccessfulCreate({required super.data, super.message = 'Successful'});
+  const ContactStateSuccessfulCreate({required super.contact, super.message = 'Successful'});
 }
 
 /// Successful update
 final class ContactStateSuccessfulUpdate extends ContactState with _ContactState {
-  const ContactStateSuccessfulUpdate({required super.data, super.message = 'Successful'});
+  const ContactStateSuccessfulUpdate({required super.contact, super.message = 'Successful'});
 }
 
 /// Successful delete
 final class ContactStateSuccessfulDelete extends ContactState with _ContactState {
-  const ContactStateSuccessfulDelete({required super.data, super.message = 'Successful'});
+  const ContactStateSuccessfulDelete({required super.contact, super.message = 'Successful'});
 }
 
 /// Error
 final class ContactStateError extends ContactState with _ContactState {
-  const ContactStateError({required super.data, super.message = 'An error has occurred.'});
+  const ContactStateError({required super.contact, super.message = 'An error has occurred.'});
 }
 
 base mixin _ContactState on ContactState {}
@@ -84,16 +82,13 @@ typedef ContactStateMatch<R, S extends ContactState> = R Function(S state);
 
 @immutable
 abstract base class _ContactStateBase {
-  const _ContactStateBase({required this.data, required this.message});
+  const _ContactStateBase({required this.contact, required this.message});
 
   /// Data entity payload.
-  final ContactEntity data;
+  final Contact contact;
 
   /// Message or state description.
   final String message;
-
-  /// Has data
-  bool get hasData => data.isNotEmpty;
 
   /// If an error has occurred?
   bool get hasError => maybeMap<bool>(orElse: () => false, error: (_) => true);
@@ -167,8 +162,10 @@ abstract base class _ContactStateBase {
       );
 
   @override
-  int get hashCode => data.hashCode;
+  int get hashCode => contact.hashCode;
 
   @override
-  bool operator ==(Object other) => identical(this, other);
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _ContactStateBase && runtimeType == other.runtimeType && contact.contactId == other.contact.contactId;
 }

@@ -5,9 +5,11 @@ import 'package:contacts_app/src/feature/contacts/model/contact_mapper.dart';
 
 abstract interface class ContactStorageDataProvider {
   Future<List<Contact>> getContacts();
-  Future<void> deleteContact(String contactId);
-  Future<String> createContact(Contact contact);
-  Future<void> updateContact(Contact contact);
+  Future<Contact> getContact(String contactId);
+  Future<Contact> deleteContact(String contactId);
+  Future<Contact> createContact(Contact contact);
+  Future<Contact> updateContact(Contact contact);
+  Future<void> putMany(List<Contact> contacts);
 }
 
 class ContactObjectBoxDataProvider implements ContactStorageDataProvider {
@@ -18,14 +20,24 @@ class ContactObjectBoxDataProvider implements ContactStorageDataProvider {
   }) : _database = database;
 
   @override
-  Future<String> createContact(Contact contact) async {
-    _database.contactBox.put(contact.toContactEntity(), mode: PutMode.insert);
-    return contact.contactId;
+  Future<Contact> createContact(Contact contact) async {
+    final contactEntity = contact.toContactEntity();
+    if (contactEntity.addresses.isNotEmpty) {
+      _database.addressBox.putMany(contactEntity.addresses);
+    }
+    final newContactEntity = await _database.contactBox.putAndGetAsync(contact.toContactEntity(), mode: PutMode.insert);
+    return newContactEntity.toContact();
   }
 
   @override
-  Future<void> deleteContact(String contactId) async {
-    _database.contactBox.query(ContactEntity_.contactId.equals(contactId)).build().remove();
+  Future<Contact> deleteContact(String contactId) async {
+    final deletedEntity = _database.contactBox.query(ContactEntity_.contactId.equals(contactId)).build().findUnique();
+    if (deletedEntity != null) {
+      _database.contactBox.remove(deletedEntity.id);
+      return deletedEntity.toContact();
+    } else {
+      throw Exception('No valid contact');
+    }
   }
 
   @override
@@ -35,13 +47,40 @@ class ContactObjectBoxDataProvider implements ContactStorageDataProvider {
   }
 
   @override
-  Future<void> updateContact(Contact contact) async {
-    final uniqueContactId =
-        _database.contactBox.query(ContactEntity_.contactId.equals(contact.contactId)).build().findUnique()?.id;
-    if (uniqueContactId != null) {
-      _database.contactBox.put(contact.toContactEntity(id: uniqueContactId), mode: PutMode.update);
+  Future<Contact> updateContact(Contact contact) async {
+    final uniqueContactEntity =
+        _database.contactBox.query(ContactEntity_.contactId.equals(contact.contactId)).build().findUnique();
+    if (uniqueContactEntity != null) {
+      final contactEntity = contact.toContactEntity(id: uniqueContactEntity.id);
+      final contactAddressesIds = contact.addresses.map((e) => e.id).toList();
+      final deletionAddresses =
+          uniqueContactEntity.addresses.where((element) => !contactAddressesIds.contains(element.id)).toList();
+      if (deletionAddresses.isNotEmpty) {
+        _database.addressBox.removeMany(deletionAddresses.map((e) => e.id).toList());
+      }
+      final updatedContactEntity = await _database.contactBox.putAndGetAsync(
+        contactEntity,
+        mode: PutMode.put,
+      );
+      return updatedContactEntity.toContact();
     } else {
       throw Exception('No valid contact');
     }
+  }
+
+  @override
+  Future<Contact> getContact(String contactId) async {
+    final contactEntity = _database.contactBox.query(ContactEntity_.contactId.equals(contactId)).build().findUnique();
+    if (contactEntity != null) {
+      return contactEntity.toContact();
+    } else {
+      throw Exception('No valid contact');
+    }
+  }
+
+  @override
+  Future<void> putMany(List<Contact> contacts) async {
+    final entities = contacts.map((e) => e.toContactEntity()).toList();
+    _database.contactBox.putMany(entities);
   }
 }

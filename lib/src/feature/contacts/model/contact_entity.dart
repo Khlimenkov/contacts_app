@@ -1,3 +1,4 @@
+import 'package:contacts_app/src/feature/contacts/model/address_entity.dart';
 import 'package:objectbox/objectbox.dart';
 
 @Entity()
@@ -9,22 +10,15 @@ class ContactEntity {
   String firstName;
   String phoneNumber;
   String? lastName;
-  String? streetAddress1;
-  String? streetAddress2;
-  String? city;
-  String? state;
-  String? zipCode;
+
+  @Backlink()
+  final addresses = ToMany<AddressEntity>();
 
   ContactEntity({
     required this.contactId,
     required this.firstName,
     required this.phoneNumber,
     this.id = 0,
-    this.city,
     this.lastName,
-    this.state,
-    this.streetAddress1,
-    this.streetAddress2,
-    this.zipCode,
   });
 }

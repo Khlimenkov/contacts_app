@@ -14,7 +14,9 @@ import 'package:objectbox/internal.dart'; // generated code can access "internal
 import 'package:objectbox/objectbox.dart';
 import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
+import 'src/feature/contacts/model/address_entity.dart';
 import 'src/feature/contacts/model/contact_entity.dart';
+import 'src/feature/feed/model/key_value_entity.dart';
 
 export 'package:objectbox/objectbox.dart'; // so that callers only have to import this file
 
@@ -50,32 +52,76 @@ final _entities = <ModelEntity>[
             id: const IdUid(5, 7104261844989455389),
             name: 'lastName',
             type: 9,
-            flags: 0),
+            flags: 0)
+      ],
+      relations: <ModelRelation>[],
+      backlinks: <ModelBacklink>[
+        ModelBacklink(
+            name: 'addresses', srcEntity: 'AddressEntity', srcField: '')
+      ]),
+  ModelEntity(
+      id: const IdUid(2, 2719577711004138140),
+      name: 'AddressEntity',
+      lastPropertyId: const IdUid(7, 3850678379611296990),
+      flags: 0,
+      properties: <ModelProperty>[
         ModelProperty(
-            id: const IdUid(6, 5675960133625132056),
+            id: const IdUid(1, 6088950878606855250),
+            name: 'id',
+            type: 6,
+            flags: 1),
+        ModelProperty(
+            id: const IdUid(2, 7471539822404204231),
             name: 'streetAddress1',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(7, 7457435282109296770),
+            id: const IdUid(3, 4624936437630673310),
             name: 'streetAddress2',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(8, 7180634016401117066),
+            id: const IdUid(4, 2490243851181496594),
             name: 'city',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(9, 1616982668454524571),
+            id: const IdUid(5, 7249880801608904899),
             name: 'state',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(10, 3551450578368966175),
+            id: const IdUid(6, 8756738432940197750),
             name: 'zipCode',
             type: 9,
-            flags: 0)
+            flags: 0),
+        ModelProperty(
+            id: const IdUid(7, 3850678379611296990),
+            name: 'contactId',
+            type: 11,
+            flags: 520,
+            indexId: const IdUid(2, 3443515287978649145),
+            relationTarget: 'ContactEntity')
+      ],
+      relations: <ModelRelation>[],
+      backlinks: <ModelBacklink>[]),
+  ModelEntity(
+      id: const IdUid(3, 3221981665273395467),
+      name: 'KeyValueEntity',
+      lastPropertyId: const IdUid(2, 3893653159142595088),
+      flags: 0,
+      properties: <ModelProperty>[
+        ModelProperty(
+            id: const IdUid(1, 1488489894732895659),
+            name: 'id',
+            type: 6,
+            flags: 1),
+        ModelProperty(
+            id: const IdUid(2, 3893653159142595088),
+            name: 'key',
+            type: 9,
+            flags: 2048,
+            indexId: const IdUid(3, 7307668552630495109))
       ],
       relations: <ModelRelation>[],
       backlinks: <ModelBacklink>[])
@@ -101,13 +147,19 @@ Future<Store> openStore(
 ModelDefinition getObjectBoxModel() {
   final model = ModelInfo(
       entities: _entities,
-      lastEntityId: const IdUid(1, 2093510403859855431),
-      lastIndexId: const IdUid(1, 6920068792273928267),
+      lastEntityId: const IdUid(3, 3221981665273395467),
+      lastIndexId: const IdUid(3, 7307668552630495109),
       lastRelationId: const IdUid(0, 0),
       lastSequenceId: const IdUid(0, 0),
       retiredEntityUids: const [],
       retiredIndexUids: const [],
-      retiredPropertyUids: const [],
+      retiredPropertyUids: const [
+        5675960133625132056,
+        7457435282109296770,
+        7180634016401117066,
+        1616982668454524571,
+        3551450578368966175
+      ],
       retiredRelationUids: const [],
       modelVersion: 5,
       modelVersionParserMinimum: 5,
@@ -117,7 +169,11 @@ ModelDefinition getObjectBoxModel() {
     ContactEntity: EntityDefinition<ContactEntity>(
         model: _entities[0],
         toOneRelations: (ContactEntity object) => [],
-        toManyRelations: (ContactEntity object) => {},
+        toManyRelations: (ContactEntity object) => {
+              RelInfo<AddressEntity>.toOneBacklink(7, object.id,
+                      (AddressEntity srcObject) => srcObject.contact):
+                  object.addresses
+            },
         getId: (ContactEntity object) => object.id,
         setId: (ContactEntity object, int id) {
           object.id = id;
@@ -129,29 +185,12 @@ ModelDefinition getObjectBoxModel() {
           final lastNameOffset = object.lastName == null
               ? null
               : fbb.writeString(object.lastName!);
-          final streetAddress1Offset = object.streetAddress1 == null
-              ? null
-              : fbb.writeString(object.streetAddress1!);
-          final streetAddress2Offset = object.streetAddress2 == null
-              ? null
-              : fbb.writeString(object.streetAddress2!);
-          final cityOffset =
-              object.city == null ? null : fbb.writeString(object.city!);
-          final stateOffset =
-              object.state == null ? null : fbb.writeString(object.state!);
-          final zipCodeOffset =
-              object.zipCode == null ? null : fbb.writeString(object.zipCode!);
           fbb.startTable(11);
           fbb.addInt64(0, object.id);
           fbb.addOffset(1, contactIdOffset);
           fbb.addOffset(2, firstNameOffset);
           fbb.addOffset(3, phoneNumberOffset);
           fbb.addOffset(4, lastNameOffset);
-          fbb.addOffset(5, streetAddress1Offset);
-          fbb.addOffset(6, streetAddress2Offset);
-          fbb.addOffset(7, cityOffset);
-          fbb.addOffset(8, stateOffset);
-          fbb.addOffset(9, zipCodeOffset);
           fbb.finish(fbb.endTable());
           return object.id;
         },
@@ -166,17 +205,92 @@ ModelDefinition getObjectBoxModel() {
                   .vTableGet(buffer, rootOffset, 8, ''),
               phoneNumber: const fb.StringReader(asciiOptimization: true)
                   .vTableGet(buffer, rootOffset, 10, ''),
-              city: const fb.StringReader(asciiOptimization: true)
-                  .vTableGetNullable(buffer, rootOffset, 18),
+              id: const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0),
               lastName: const fb.StringReader(asciiOptimization: true)
-                  .vTableGetNullable(buffer, rootOffset, 12),
+                  .vTableGetNullable(buffer, rootOffset, 12));
+          InternalToManyAccess.setRelInfo<ContactEntity>(
+              object.addresses,
+              store,
+              RelInfo<AddressEntity>.toOneBacklink(7, object.id,
+                  (AddressEntity srcObject) => srcObject.contact));
+          return object;
+        }),
+    AddressEntity: EntityDefinition<AddressEntity>(
+        model: _entities[1],
+        toOneRelations: (AddressEntity object) => [object.contact],
+        toManyRelations: (AddressEntity object) => {},
+        getId: (AddressEntity object) => object.id,
+        setId: (AddressEntity object, int id) {
+          object.id = id;
+        },
+        objectToFB: (AddressEntity object, fb.Builder fbb) {
+          final streetAddress1Offset = object.streetAddress1 == null
+              ? null
+              : fbb.writeString(object.streetAddress1!);
+          final streetAddress2Offset = object.streetAddress2 == null
+              ? null
+              : fbb.writeString(object.streetAddress2!);
+          final cityOffset =
+              object.city == null ? null : fbb.writeString(object.city!);
+          final stateOffset =
+              object.state == null ? null : fbb.writeString(object.state!);
+          final zipCodeOffset =
+              object.zipCode == null ? null : fbb.writeString(object.zipCode!);
+          fbb.startTable(8);
+          fbb.addInt64(0, object.id);
+          fbb.addOffset(1, streetAddress1Offset);
+          fbb.addOffset(2, streetAddress2Offset);
+          fbb.addOffset(3, cityOffset);
+          fbb.addOffset(4, stateOffset);
+          fbb.addOffset(5, zipCodeOffset);
+          fbb.addInt64(6, object.contact.targetId);
+          fbb.finish(fbb.endTable());
+          return object.id;
+        },
+        objectFromFB: (Store store, ByteData fbData) {
+          final buffer = fb.BufferContext(fbData);
+          final rootOffset = buffer.derefObject(0);
+
+          final object = AddressEntity(
+              id: const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0),
+              city: const fb.StringReader(asciiOptimization: true)
+                  .vTableGetNullable(buffer, rootOffset, 10),
               state: const fb.StringReader(asciiOptimization: true)
-                  .vTableGetNullable(buffer, rootOffset, 20),
+                  .vTableGetNullable(buffer, rootOffset, 12),
               streetAddress1: const fb.StringReader(asciiOptimization: true)
-                  .vTableGetNullable(buffer, rootOffset, 14),
-              streetAddress2:
-                  const fb.StringReader(asciiOptimization: true).vTableGetNullable(buffer, rootOffset, 16),
-              zipCode: const fb.StringReader(asciiOptimization: true).vTableGetNullable(buffer, rootOffset, 22))
+                  .vTableGetNullable(buffer, rootOffset, 6),
+              streetAddress2: const fb.StringReader(asciiOptimization: true)
+                  .vTableGetNullable(buffer, rootOffset, 8),
+              zipCode: const fb.StringReader(asciiOptimization: true)
+                  .vTableGetNullable(buffer, rootOffset, 14));
+          object.contact.targetId =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 16, 0);
+          object.contact.attach(store);
+          return object;
+        }),
+    KeyValueEntity: EntityDefinition<KeyValueEntity>(
+        model: _entities[2],
+        toOneRelations: (KeyValueEntity object) => [],
+        toManyRelations: (KeyValueEntity object) => {},
+        getId: (KeyValueEntity object) => object.id,
+        setId: (KeyValueEntity object, int id) {
+          object.id = id;
+        },
+        objectToFB: (KeyValueEntity object, fb.Builder fbb) {
+          final keyOffset = fbb.writeString(object.key);
+          fbb.startTable(3);
+          fbb.addInt64(0, object.id);
+          fbb.addOffset(1, keyOffset);
+          fbb.finish(fbb.endTable());
+          return object.id;
+        },
+        objectFromFB: (Store store, ByteData fbData) {
+          final buffer = fb.BufferContext(fbData);
+          final rootOffset = buffer.derefObject(0);
+
+          final object = KeyValueEntity(
+              key: const fb.StringReader(asciiOptimization: true)
+                  .vTableGet(buffer, rootOffset, 6, ''))
             ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
 
           return object;
@@ -207,24 +321,46 @@ class ContactEntity_ {
   /// see [ContactEntity.lastName]
   static final lastName =
       QueryStringProperty<ContactEntity>(_entities[0].properties[4]);
+}
 
-  /// see [ContactEntity.streetAddress1]
+/// [AddressEntity] entity fields to define ObjectBox queries.
+class AddressEntity_ {
+  /// see [AddressEntity.id]
+  static final id =
+      QueryIntegerProperty<AddressEntity>(_entities[1].properties[0]);
+
+  /// see [AddressEntity.streetAddress1]
   static final streetAddress1 =
-      QueryStringProperty<ContactEntity>(_entities[0].properties[5]);
+      QueryStringProperty<AddressEntity>(_entities[1].properties[1]);
 
-  /// see [ContactEntity.streetAddress2]
+  /// see [AddressEntity.streetAddress2]
   static final streetAddress2 =
-      QueryStringProperty<ContactEntity>(_entities[0].properties[6]);
+      QueryStringProperty<AddressEntity>(_entities[1].properties[2]);
 
-  /// see [ContactEntity.city]
+  /// see [AddressEntity.city]
   static final city =
-      QueryStringProperty<ContactEntity>(_entities[0].properties[7]);
+      QueryStringProperty<AddressEntity>(_entities[1].properties[3]);
 
-  /// see [ContactEntity.state]
+  /// see [AddressEntity.state]
   static final state =
-      QueryStringProperty<ContactEntity>(_entities[0].properties[8]);
+      QueryStringProperty<AddressEntity>(_entities[1].properties[4]);
 
-  /// see [ContactEntity.zipCode]
+  /// see [AddressEntity.zipCode]
   static final zipCode =
-      QueryStringProperty<ContactEntity>(_entities[0].properties[9]);
+      QueryStringProperty<AddressEntity>(_entities[1].properties[5]);
+
+  /// see [AddressEntity.contact]
+  static final contact = QueryRelationToOne<AddressEntity, ContactEntity>(
+      _entities[1].properties[6]);
+}
+
+/// [KeyValueEntity] entity fields to define ObjectBox queries.
+class KeyValueEntity_ {
+  /// see [KeyValueEntity.id]
+  static final id =
+      QueryIntegerProperty<KeyValueEntity>(_entities[2].properties[0]);
+
+  /// see [KeyValueEntity.key]
+  static final key =
+      QueryStringProperty<KeyValueEntity>(_entities[2].properties[1]);
 }

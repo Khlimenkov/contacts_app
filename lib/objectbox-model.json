@@ -35,45 +35,94 @@
           "id": "5:7104261844989455389",
           "name": "lastName",
           "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:2719577711004138140",
+      "lastPropertyId": "7:3850678379611296990",
+      "name": "AddressEntity",
+      "properties": [
+        {
+          "id": "1:6088950878606855250",
+          "name": "id",
+          "type": 6,
+          "flags": 1
         },
         {
-          "id": "6:5675960133625132056",
+          "id": "2:7471539822404204231",
           "name": "streetAddress1",
           "type": 9
         },
         {
-          "id": "7:7457435282109296770",
+          "id": "3:4624936437630673310",
           "name": "streetAddress2",
           "type": 9
         },
         {
-          "id": "8:7180634016401117066",
+          "id": "4:2490243851181496594",
           "name": "city",
           "type": 9
         },
         {
-          "id": "9:1616982668454524571",
+          "id": "5:7249880801608904899",
           "name": "state",
           "type": 9
         },
         {
-          "id": "10:3551450578368966175",
+          "id": "6:8756738432940197750",
           "name": "zipCode",
           "type": 9
+        },
+        {
+          "id": "7:3850678379611296990",
+          "name": "contactId",
+          "type": 11,
+          "flags": 520,
+          "indexId": "2:3443515287978649145",
+          "relationTarget": "ContactEntity"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:3221981665273395467",
+      "lastPropertyId": "2:3893653159142595088",
+      "name": "KeyValueEntity",
+      "properties": [
+        {
+          "id": "1:1488489894732895659",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:3893653159142595088",
+          "name": "key",
+          "type": 9,
+          "flags": 2048,
+          "indexId": "3:7307668552630495109"
         }
       ],
       "relations": []
     }
   ],
-  "lastEntityId": "1:2093510403859855431",
-  "lastIndexId": "1:6920068792273928267",
+  "lastEntityId": "3:3221981665273395467",
+  "lastIndexId": "3:7307668552630495109",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,
   "retiredEntityUids": [],
   "retiredIndexUids": [],
-  "retiredPropertyUids": [],
+  "retiredPropertyUids": [
+    5675960133625132056,
+    7457435282109296770,
+    7180634016401117066,
+    1616982668454524571,
+    3551450578368966175
+  ],
   "retiredRelationUids": [],
   "version": 1
 }
